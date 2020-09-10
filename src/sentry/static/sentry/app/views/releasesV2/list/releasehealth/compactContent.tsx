@@ -22,11 +22,7 @@ const CompactContent = ({projects, releaseVersion, orgSlug}: Props) => (
   <React.Fragment>
     <Header>{t('Projects')}</Header>
     <PanelBody>
-      <StyledClippedHealthRows
-        fadeHeight="46px"
-        maxVisibleItems={4}
-        columnsQuantity={projects.length}
-      >
+      <StyledClippedHealthRows fadeHeight="46px" maxVisibleItems={8}>
         {projects.map(project => {
           const {id, slug, newGroups = 0} = project;
           return (
@@ -57,19 +53,26 @@ const StyledItem = styled(Item)`
   align-items: center;
   border-right: 1px solid ${p => p.theme.borderLight};
   display: grid;
-  grid-template-columns: 1fr max-content;
+  grid-template-columns: minmax(100px, max-content) auto;
   grid-column-gap: ${space(2)};
+  justify-content: space-between;
   :last-child {
     border-right: 1px solid ${p => p.theme.borderLight};
   }
 `;
 
-const StyledClippedHealthRows = styled(ClippedHealthRows)<{columnsQuantity: number}>`
+const StyledClippedHealthRows = styled(ClippedHealthRows)`
   display: grid;
   grid-template-columns: 1fr;
   margin-right: -1px;
   margin-bottom: -1px;
   @media (min-width: ${p => p.theme.breakpoints[0]}) {
-    ${p => p.columnsQuantity > 1 && 'grid-template-columns: repeat(2, 1fr)'};
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: ${p => p.theme.breakpoints[1]}) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (min-width: ${p => p.theme.breakpoints[2]}) {
+    grid-template-columns: repeat(4, 1fr);
   }
 `;

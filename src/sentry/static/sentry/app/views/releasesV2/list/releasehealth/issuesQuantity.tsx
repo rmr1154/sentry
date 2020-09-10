@@ -1,9 +1,12 @@
 import React from 'react';
+import styled from '@emotion/styled';
 
-import {t, tct} from 'app/locale';
+import {t, tn} from 'app/locale';
 import Tooltip from 'app/components/tooltip';
 import Link from 'app/components/links/link';
 import Count from 'app/components/count';
+import overflowEllipsis from 'app/styles/overflowEllipsis';
+import space from 'app/styles/space';
 
 import {getReleaseNewIssuesUrl} from '../../utils';
 
@@ -21,26 +24,32 @@ const IssuesQuantity = ({
   projectId,
   releaseVersion,
   isCompact = false,
-}: Props) => {
-  const issuesQuantity = isCompact ? (
-    tct('[count] issues', {
-      count: <Count value={newGroups} />,
-    })
-  ) : (
-    <Count value={newGroups} />
-  );
-
-  if (newGroups !== 0) {
-    return (
-      <Tooltip title={t('Open in Issues')}>
-        <Link to={getReleaseNewIssuesUrl(orgSlug, projectId, releaseVersion)}>
-          {issuesQuantity}
-        </Link>
-      </Tooltip>
-    );
-  }
-
-  return <div>{issuesQuantity}</div>;
-};
+}: Props) => (
+  <Tooltip title={t('Open in Issues')}>
+    <Link to={getReleaseNewIssuesUrl(orgSlug, projectId, releaseVersion)}>
+      {isCompact ? (
+        <Issues>
+          <StyledCount value={newGroups} />
+          <span>{tn('issue', 'issues', newGroups)}</span>
+        </Issues>
+      ) : (
+        <Count value={newGroups} />
+      )}
+    </Link>
+  </Tooltip>
+);
 
 export default IssuesQuantity;
+
+const Issues = styled('div')`
+  display: grid;
+  grid-gap: ${space(0.5)};
+  grid-template-columns: minmax(35px, 1fr) max-content;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: end;
+`;
+
+const StyledCount = styled(Count)`
+  ${overflowEllipsis}
+`;
