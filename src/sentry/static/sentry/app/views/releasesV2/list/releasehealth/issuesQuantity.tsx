@@ -50,6 +50,7 @@ const Issues = styled('div')`
   text-align: end;
 `;
 
+// overflowEllipsis is useful if the count's value is over 1000000000
 const StyledCount = styled(Count)`
   ${overflowEllipsis}
 `;

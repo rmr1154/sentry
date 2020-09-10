@@ -135,9 +135,13 @@ const Wrapper = styled('div')<{
   }
   ${p => p.displayCollapsedButton && `padding-bottom: ${p.fadeHeight}px;`}
 
-  @media (max-width: ${p => p.theme.breakpoints[0]}) {
-    ${p => p.height && `height: ${p.height}px;`}
-  }
+  ${p =>
+    p.height &&
+    `
+      @media (max-width: ${p.theme.breakpoints[0]}) {
+        height: ${p.height}px;
+      }
+  `}
 `;
 
 export default clippedHealthRows;
