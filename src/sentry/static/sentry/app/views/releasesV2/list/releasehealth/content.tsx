@@ -63,7 +63,7 @@ const Content = ({
       </Header>
 
       <PanelBody>
-        <StyledClippedHealthRows fadeHeight="46px" maxVisibleItems={4}>
+        <StyledClippedHealthRows>
           {projects.map(project => {
             const {slug, healthData, newGroups} = project;
             const {

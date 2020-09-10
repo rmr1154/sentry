@@ -7,8 +7,8 @@ import {t, tct} from 'app/locale';
 import Button from 'app/components/button';
 
 const defaultprops = {
-  maxVisibleItems: 5,
-  fadeHeight: '40px',
+  maxVisibleItems: 4,
+  fadeHeight: 46,
 };
 
 type Props = {
@@ -48,6 +48,11 @@ class clippedHealthRows extends React.Component<Props, State> {
         className={className}
         fadeHeight={fadeHeight}
         displayCollapsedButton={displayCollapsedButton}
+        height={
+          children.length > maxVisibleItems && !displayCollapsedButton
+            ? fadeHeight * defaultprops.maxVisibleItems
+            : undefined
+        }
       >
         {children.map((item, index) => {
           if (!collapsed || index < maxVisibleItems) {
@@ -117,17 +122,22 @@ const CollapseWrapper = styled('div')`
 `;
 
 const Wrapper = styled('div')<{
-  fadeHeight: string;
+  fadeHeight: number;
   displayCollapsedButton: boolean;
+  height?: number;
 }>`
   position: relative;
   ${ShowMoreWrapper} {
-    height: ${p => p.fadeHeight};
+    height: ${p => p.fadeHeight}px;
   }
   ${CollapseWrapper} {
-    height: ${p => p.fadeHeight};
+    height: ${p => p.fadeHeight}px;
   }
-  ${p => p.displayCollapsedButton && `padding-bottom: ${p.fadeHeight};`}
+  ${p => p.displayCollapsedButton && `padding-bottom: ${p.fadeHeight}px;`}
+
+  @media (max-width: ${p => p.theme.breakpoints[0]}) {
+    ${p => p.height && `height: ${p.height}px;`}
+  }
 `;
 
 export default clippedHealthRows;

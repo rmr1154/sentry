@@ -22,7 +22,7 @@ const CompactContent = ({projects, releaseVersion, orgSlug}: Props) => (
   <React.Fragment>
     <Header>{t('Projects')}</Header>
     <PanelBody>
-      <StyledClippedHealthRows fadeHeight="46px" maxVisibleItems={8}>
+      <StyledClippedHealthRows maxVisibleItems={12}>
         {projects.map(project => {
           const {id, slug, newGroups = 0} = project;
           return (
