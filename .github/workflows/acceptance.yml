@@ -7,7 +7,7 @@ on:
 
 jobs:
     getsentry:
-      if: ${{ github.ref != 'refs/heads/master' }}
+      if: ${{ github.ref != 'refs/heads/master' && !contains(github.event.commits[0].message, '#test-getsentry') }}
       runs-on: ubuntu-16.04
       steps:
         - name: getsentry token
@@ -99,9 +99,6 @@ jobs:
         SENTRY_LIGHT_BUILD: 1
         SENTRY_SKIP_BACKEND_VALIDATION: 1
         MIGRATIONS_TEST_MIGRATE: 0
-
-        # Use this to override the django version in the requirements file.
-        DJANGO_VERSION: ">=1.11,<1.12"
 
         # Node configuration
         NODE_OPTIONS: --max-old-space-size=4096
@@ -222,6 +219,8 @@ jobs:
           run: |
             mkdir -p ${{ steps.config.outputs.acceptance-dir }}
             mkdir -p ${{ steps.config.outputs.acceptance-dir }}-mobile
+            mkdir -p ${{ steps.config.outputs.acceptance-dir }}-tooltips
+            [ "$GITHUB_REF" = "refs/heads/master" ] && export PYTEST_SENTRY_ALWAYS_REPORT=1
             make run-acceptance
           env:
             PYTEST_SNAPSHOTS_DIR: ${{ steps.config.outputs.acceptance-dir }}
