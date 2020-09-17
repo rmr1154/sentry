@@ -2513,7 +2513,7 @@ class OrganizationEventsV2EndpointTest(APITestCase, SnubaTestCase):
 
     def test_measurements_query(self):
         data = load_data("transaction")
-        data["measurements"] = {"fp": 0.4}
+        data["measurements"] = {"fp": {"value": 0.4}}
         self.store_event(data, self.project.id)
         query = {"field": ["measurements.fp", "p50()"]}
         response = self.do_request(query)
@@ -2523,7 +2523,7 @@ class OrganizationEventsV2EndpointTest(APITestCase, SnubaTestCase):
 
     def test_measurements_aggregations(self):
         data = load_data("transaction")
-        data["measurements"] = {"fcp": 0.5}
+        data["measurements"] = {"fp": {"value": 0.5}}
         self.store_event(data, self.project.id)
         # should try all the potential aggregates
         query = {"field": ["percentile(measurements.fcp, 0.5)"]}
@@ -2534,7 +2534,7 @@ class OrganizationEventsV2EndpointTest(APITestCase, SnubaTestCase):
 
     def test_measurements_conditions(self):
         data = load_data("transaction")
-        data["measurements"] = {"lcp": 0.5}
+        data["measurements"] = {"lcp": {"value": 0.5}}
         self.store_event(data, self.project.id)
         # TODO(tonyx): add test for `>`, `<`, `=`, `!=`, `has`, `!has`
 
