@@ -9,17 +9,16 @@ from sentry.api.serializers import serialize
 from sentry.models import Release, ReleaseCommit, Repository
 
 
-
 class ProjectReleaseRepositories(ProjectEndpoint):
 
     permission_classes = (ProjectReleasePermission,)
 
     def get(self, request, project, version):
         """
-        Retrieve the Repositories of a Project's Release
+        Retrieve Project Repositories from a Release
         ````````````````````````````
 
-        Return details on an individual release.
+        This endpoint is used in the commits and changed files tab of the release details page
 
         :pparam string organization_slug: the slug of the organization the
                                           release belongs to.
@@ -42,9 +41,4 @@ class ProjectReleaseRepositories(ProjectEndpoint):
 
         repositories = Repository.objects.filter(id__in=repository_ids)
 
-        return Response(
-            serialize(
-                list(repositories),
-                request.user,
-            )
-        )
+        return Response(serialize(list(repositories), request.user,))
