@@ -79,8 +79,8 @@ const ProjectSelector = ({
   multiProjects,
   onSelect,
   onMultiSelect,
-  selectedProjects = [],
   multi = false,
+  selectedProjects = [],
   ...props
 }: Props) => {
   const getProjects = () => {
