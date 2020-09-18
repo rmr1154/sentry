@@ -6,7 +6,7 @@ import pick from 'lodash/pick';
 import {URL_PARAM} from 'app/constants/globalSelectionHeader';
 import {t} from 'app/locale';
 import DropdownControl, {DropdownItem} from 'app/components/dropdownControl';
-import overflowEllipsisLeft from 'app/styles/overflowEllipsisLeft';
+import overflowEllipsis from 'app/styles/overflowEllipsis';
 import space from 'app/styles/space';
 import {Repository} from 'app/types';
 import AsyncView from 'app/views/asyncView';
@@ -26,6 +26,7 @@ type Props = RouteComponentProps<RouteParams, {}> & AsyncView['props'];
 type State = {
   repos: Array<Repository>;
   activeRepo: string;
+  dropdownButtonWidth?: number;
 } & AsyncView['state'];
 
 class Repositories<P extends Props = Props, S extends State = State> extends AsyncView<
@@ -40,6 +41,25 @@ class Repositories<P extends Props = Props, S extends State = State> extends Asy
     this.setActiveRepo(this.props);
   }
 
+  componentDidUpdate(prevProps: P, prevState: S) {
+    if (
+      !this.state.dropdownButtonWidth ||
+      prevState.activeRepo !== this.state.activeRepo
+    ) {
+      this.setButtonDropDownWidth();
+    }
+
+    super.componentDidUpdate(prevProps, prevState);
+  }
+  setButtonDropDownWidth() {
+    const dropdownButtonWidth = this.dropdownButton?.current?.offsetWidth;
+    if (dropdownButtonWidth) {
+      this.setState({dropdownButtonWidth});
+    }
+  }
+
+  dropdownButton = React.createRef<HTMLButtonElement>();
+
   setActiveRepo(props: Props) {
     const activeRepo = props.location.query?.activeRepo;
     if (activeRepo !== this.state.activeRepo) {
@@ -47,9 +67,13 @@ class Repositories<P extends Props = Props, S extends State = State> extends Asy
     }
   }
 
-  getReposEndpoint(): string {
-    // Children must implement this
-    throw new Error('Not implemented');
+  getReposEndpoint() {
+    const {params} = this.props;
+    const {project} = this.context;
+    const {orgId, release} = params;
+    return `/projects/${orgId}/${project.slug}/releases/${encodeURIComponent(
+      release
+    )}/repositories/`;
   }
 
   get404ErrorMessage(): string {
@@ -106,29 +130,29 @@ class Repositories<P extends Props = Props, S extends State = State> extends Asy
   };
 
   renderRepoSwitcher() {
-    const {activeRepo, repos} = this.state;
+    const {activeRepo, repos, dropdownButtonWidth} = this.state;
     return (
-      <RepoSwitcher>
-        <DropdownControl
-          label={
-            <React.Fragment>
-              <FilterText>{`${t('Filter')}: `}</FilterText>
-              {activeRepo}
-            </React.Fragment>
-          }
-        >
-          {[ALL_REPOSITORIES_LABEL, ...repos.map(repo => repo.name)].map(repoName => (
-            <DropdownItem
-              key={repoName}
-              onSelect={this.handleRepoFilterChange}
-              eventKey={repoName}
-              isActive={repoName === activeRepo}
-            >
-              <RepoLabel>{repoName}</RepoLabel>
-            </DropdownItem>
-          ))}
-        </DropdownControl>
-      </RepoSwitcher>
+      <StyledDropdownControl
+        minMenuWidth={dropdownButtonWidth}
+        label={
+          <React.Fragment>
+            <FilterText>{`${t('Filter')}:`}</FilterText>
+            {activeRepo}
+          </React.Fragment>
+        }
+        buttonProps={{forwardRef: this.dropdownButton}}
+      >
+        {[ALL_REPOSITORIES_LABEL, ...repos.map(repo => repo.name)].map(repoName => (
+          <DropdownItem
+            key={repoName}
+            onSelect={this.handleRepoFilterChange}
+            eventKey={repoName}
+            isActive={repoName === activeRepo}
+          >
+            <RepoLabel>{repoName}</RepoLabel>
+          </DropdownItem>
+        ))}
+      </StyledDropdownControl>
     );
   }
 
@@ -175,15 +199,27 @@ class Repositories<P extends Props = Props, S extends State = State> extends Asy
 
 export default Repositories;
 
-const RepoSwitcher = styled('div')`
+const StyledDropdownControl = styled(DropdownControl)<{
+  minMenuWidth: State['dropdownButtonWidth'];
+}>`
   margin-bottom: ${space(1)};
+  > *:nth-child(2) {
+    right: auto;
+    width: auto;
+    ${p => p.minMenuWidth && `min-width: calc(${p.minMenuWidth}px + 10px);`}
+    border-radius: ${p => p.theme.borderRadius};
+    border-top-left-radius: 0px;
+    border: 1px solid ${p => p.theme.button.default.border};
+    top: calc(100% - 1px);
+  }
 `;
 
 const FilterText = styled('em')`
   font-style: normal;
   color: ${p => p.theme.gray500};
+  margin-right: ${space(0.5)};
 `;
 
 const RepoLabel = styled('div')`
-  ${overflowEllipsisLeft}
+  ${overflowEllipsis}
 `;

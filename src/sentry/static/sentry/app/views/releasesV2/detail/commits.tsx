@@ -41,15 +41,6 @@ class ReleaseCommits extends Repositories<Props, State> {
     };
   }
 
-  getReposEndpoint() {
-    const {params} = this.props;
-    const {project} = this.context;
-    const {orgId, release} = params;
-    return `/projects/${orgId}/${project.slug}/releases/${encodeURIComponent(
-      release
-    )}/repositories/`;
-  }
-
   getEndpoints = (): ReturnType<Repositories['getEndpoints']> => {
     const {params} = this.props;
     const {orgId, release} = params;

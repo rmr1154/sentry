@@ -41,13 +41,6 @@ class FilesChanged extends Repositories<Props, State> {
       fileList: [],
     };
   }
-
-  getReposEndpoint() {
-    const {params} = this.props;
-    const {orgId} = params;
-    return `/organizations/${orgId}/repos/`;
-  }
-
   getEndpoints = (): ReturnType<Repositories['getEndpoints']> => {
     const {params} = this.props;
     const {orgId, release} = params;

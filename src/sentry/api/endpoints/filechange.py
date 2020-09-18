@@ -5,7 +5,7 @@ from sentry.api.bases.organization import OrganizationReleasesBaseEndpoint
 from sentry.api.exceptions import ResourceDoesNotExist
 from sentry.api.serializers import serialize
 from sentry.models import CommitFileChange, Release, ReleaseCommit, Repository
-from rest_framework.response import Response
+from sentry.api.paginator import OffsetPaginator
 
 
 class CommitFileChangeEndpoint(OrganizationReleasesBaseEndpoint):
@@ -25,6 +25,8 @@ class CommitFileChangeEndpoint(OrganizationReleasesBaseEndpoint):
         :pparam string repo_id: the repository ID
 
         :auth: required
+
+
         """
 
         try:
@@ -35,11 +37,9 @@ class CommitFileChangeEndpoint(OrganizationReleasesBaseEndpoint):
         if not self.has_release_permission(request, organization, release):
             raise ResourceDoesNotExist
 
-        queryset = list(
-            CommitFileChange.objects.filter(
-                commit_id__in=ReleaseCommit.objects.filter(release=release).values_list(
-                    "commit_id", flat=True
-                )
+        queryset = CommitFileChange.objects.filter(
+            commit_id__in=ReleaseCommit.objects.filter(release=release).values_list(
+                "commit_id", flat=True
             )
         )
 
@@ -52,5 +52,10 @@ class CommitFileChangeEndpoint(OrganizationReleasesBaseEndpoint):
             except Repository.DoesNotExist:
                 raise ResourceDoesNotExist
 
-        context = serialize(queryset, request.user)
-        return Response(context)
+        return self.paginate(
+            request=request,
+            queryset=queryset,
+            order_by="filename",
+            paginator_cls=OffsetPaginator,
+            on_results=lambda x: serialize(x, request.user),
+        )
