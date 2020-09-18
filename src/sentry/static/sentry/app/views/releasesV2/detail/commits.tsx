@@ -62,7 +62,7 @@ class ReleaseCommits extends Repositories<Props, State> {
   renderContent() {
     const {commits, commitsPageLinks} = this.state;
 
-    if (commits.length === 0) {
+    if (!commits.length) {
       return this.renderEmptyContent(
         t('There are no commits associated with this release.')
       );
