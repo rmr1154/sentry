@@ -29,6 +29,7 @@ maxminddb==1.5.4
 mistune>0.7,<0.9
 mmh3>=2.3.1,<2.4
 msgpack>=0.6.1,<0.7.0
+openapi-core @ https://github.com/jrtcppv/openapi-core/archive/0.13.3.zip#egg=openapi-core
 parsimonious==0.8.0
 petname>=2.6,<2.7
 phonenumberslite>=8.11.0,<8.12.0
